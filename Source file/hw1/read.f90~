@@ -1,0 +1,4 @@
+program read_file
+implicit none
+open(unit=10, file='data.txt', action='read')
+end program read_file

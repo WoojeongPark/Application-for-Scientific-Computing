@@ -1,0 +1,5 @@
+program Least_Squares_Method
+open(unit=10,file="",action=read)
+do i=1,m
+read(10,*) p(i)
+end program Least_Squares_Method

@@ -1,0 +1,72 @@
+program 6_2
+implicit none
+real(8)::t(21),h(21),A(3,3),b(3),saveA(3,3),saveb(3),x(3),y(3),esum
+integer::i,j,k,n,ipower
+open(unit=10,file="time.txt",action='read')
+open(unit=11,file="value.txt",action='read')
+do i=1,21
+   read(10,*) t(i)
+   read(11,*) h(i)
+enddo
+end program 6_2
+
+subroutine GE_LU(A,b,n)
+implicit none
+real(8)::m
+real(8)::A(3,3),b(3)
+integer::i,j,n,k
+do j=1,n-1
+   do k=j+1,n
+      m=A(k,j)/A(j,j)
+      A(k,:)=A(k,:)-m*A(j,:)
+      b(k)=b(k)-m*b(j)
+   enddo
+enddo
+end subroutine GE_LU
+
+subroutine showmat(A,n)
+implicit none
+real(8)::A(n,n)
+integer::i,n
+do i=1,n
+   print"(*(f15.7))", A(i,:)
+enddo
+end subroutine showmat
+
+subroutine forward(L,b,x,n)
+implicit none
+real(8)::L(n,n),b(n),x(n)
+integer::i,j,n
+do i=1,n
+   x(i)=b(i)
+   do j=1,i-1
+      x(i)=x(i)-L(i,j)*x(j)
+   enddo
+   x(i)=x(i)/L(i,i)
+enddo
+end subroutine forward
+
+subroutine backward(A,b,n)
+implicit none
+integer::n,j
+real(8),intent(in)::A(1:n,1:n)
+real(8),intent(inout)::b(1:n)
+do j=n,1,-1
+   b(j)=(b(j)-dot_product(A(j,j+1:n),b(j+1:n)))/A(j,j)
+enddo
+end subroutine backward
+
+subroutine checksol(A,x,b,n)
+implicit none
+integer::n,j
+real(8)::A(n,n),x(n),b(n),tol
+tol=0.000000001
+print*, 'solution check! Tolerance is:', tol
+do j=1,n
+   if (abs(b(j)-dot_product(A(j,1:n),x(1:n)))>tol) then
+      print*, 'The solution is incorrect'
+   else
+      print*, 'The solution is correct'
+   end if
+enddo
+end subroutine checksol

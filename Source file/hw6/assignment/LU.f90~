@@ -1,0 +1,105 @@
+program LU
+implicit none
+real(8)::A(1000,1000),x(1:1000),xn(1:1000),b(1:1000),err(1000),t1,t2
+real(8)::l2norm,sum1,sum2
+integer::k,j,i,iter,max_iter
+write(*,*)  "Max_iteration?"
+read(*,*) max_iter
+b=0.0;x=0.0;err=0.0;xn=0.0;
+do j=1,1000
+   A(j,j)=1.5
+   b(j)=5.0
+   x(j)=1000.0
+   xn(j)=1000.0
+enddo
+do j=1,999
+   A(j,j+1)=-0.25
+   A(j+1,j)=-0.25
+enddo
+call cpu_time(t1)
+do iter=1,max_iter
+   do i=1,1000
+      sum1=0
+      do j=1,i-1
+         sum1=sum1+A(i,j)*xn(j)
+      enddo
+      sum2=0
+      do j=i+1,1000
+         sum2=sum2+A(i,j)*xn(j)
+      enddo
+      xn(i)=(b(i)-sum1-sum2)/A(i,i)
+      err(i)=x(i)-xn(i)
+   enddo
+   x=xn
+   l2norm=dot_product(err(1:1000),err(1:1000));l2norm=sqrt(l2norm)
+   print*, "iter=", iter, "l2 norm=", l2norm
+   if(l2norm<1.e-7) then
+      print*, "it converges at iter < ", iter
+      exit
+   end if
+enddo
+call cpu_time(t2)
+print*, "CPU time for calculation is: ", t2-t1
+end program LU
+
+
+subroutine GE_LU(A,b,n)
+implicit none
+real(8)::m
+real(8)::A(1000,1000),b(1000)
+integer::i,j,n,k
+do j=1,n-1
+   do k=j+1,n
+      m=A(k,j)/A(j,j)
+      A(k,:)=A(k,:)-m*A(j,:)
+      b(k)=b(k)-m*b(j)
+   enddo
+enddo
+end subroutine GE_LU
+
+subroutine showmat(A,n)
+implicit none
+real(8)::A(n,n)
+integer::i,n
+do i=1,n
+   print"(*(f15.7))", A(i,:)
+enddo
+end subroutine showmat
+
+subroutine forward(L,b,x,n)
+implicit none
+real(8)::L(n,n),b(n),x(n)
+integer::i,j,n
+do i=1,n
+   x(i)=b(i)
+   do j=1,i-1
+      x(i)=x(i)-L(i,j)*x(j)
+   enddo
+   x(i)=x(i)/L(i,i)
+enddo
+end subroutine forward
+
+subroutine backward(A,b,n)
+implicit none
+integer::n,j
+real(8),intent(in)::A(1:n,1:n)
+real(8),intent(inout)::b(1:n)
+do j=n,1,-1
+   b(j)=(b(j)-dot_product(A(j,j+1:n),b(j+1:n)))/A(j,j)
+enddo
+end subroutine backward
+
+subroutine checksol(A,x,b,n)
+implicit none
+integer::n,j
+real(8)::A(n,n),x(n),b(n),tol
+tol=0.000000001
+print*, 'solution check! Tolerance is:', tol
+do j=1,n
+   if (abs(b(j)-dot_product(A(j,1:n),x(1:n)))>tol) then
+      print*, 'The solution is incorrect'
+   else
+      print*, 'The solution is correct'
+   end if
+enddo
+end subroutine checksol

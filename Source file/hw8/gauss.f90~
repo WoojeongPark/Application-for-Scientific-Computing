@@ -1,0 +1,4 @@
+program gauss
+implicit none
+
+end program gauss

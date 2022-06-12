@@ -1,0 +1,84 @@
+[a2015-17231@workstation1 hw1]$ gfortran assignment#02.f90
+[a2015-17231@workstation1 hw1]$ ./a.out
+ The matrix A is: 
+ 0.9501 0.7621 0.6154 0.4057 0.0579
+ 0.2311 0.4565 0.7919 0.9355 0.3529
+ 0.6068 0.0185 0.9218 0.9169 0.8132
+ 0.4860 0.8214 0.7382 0.4103 0.0099
+ 0.8913 0.4447 0.1763 0.8936 0.1389
+ vector b and c is: 
+   2.79119992       2.76789999       3.27719998       2.46580005       2.54480004    
+   6.23280001       9.02630043       11.1428003       6.03410006       6.57849979    
+ The Upper triangular matrix of A is: 
+ 0.9501 0.7621 0.6154 0.4057 0.0579
+ 0.0000 0.2711 0.6422 0.8368 0.3388
+ 0.0000 0.0000 1.6378 2.1029 1.3613
+ 0.0000 0.0000 0.0000-0.3603-0.0613
+ 0.0000 0.0000 0.0000 0.0000 0.0467
+ The (unit)  Lower triangular matrix of A is: 
+ 1.0000 0.0000 0.0000 0.0000 0.0000
+ 0.2432 1.0000 0.0000 0.0000 0.0000
+ 0.6387-1.7270 1.0000 0.0000 0.0000
+ 0.5115 1.5917-0.3656 1.0000 0.0000
+ 0.9381-0.9967 0.1460-2.8864 1.0000
+ The matrix multiplication of LU is: 
+ 0.9501 0.7621 0.6154 0.4057 0.0579
+ 0.2311 0.4565 0.7919 0.9355 0.3529
+ 0.6068 0.0185 0.9218 0.9169 0.8132
+ 0.4860 0.8214 0.7382 0.4103 0.0099
+ 0.8913 0.4447 0.1763 0.8936 0.1389
+ above is same to original A. The decomposition is successful
+ Solve LUx=b The result is:
+  0.999996006       1.00001538      0.999987900      0.999995708       1.00002146    
+ solution check! Tolerance is:   1.01327896E-06
+ The solution is correct
+ The solution is correct
+ The solution is correct
+ The solution is correct
+ The solution is correct
+ Solve LUx=c The result is:
+  0.999995172       2.00001407       2.99998975       3.99999714       5.00001764    
+ solution check! Tolerance is:   1.01327896E-06
+ The solution is correct
+ The solution is correct
+ The solution is correct
+ The solution is correct
+ The solution is correct
+[a2015-17231@workstation1 hw1]$ gfortran assignment#02_2.f90
+[4]-  Done                    emacs assignment#02.f90
+[a2015-17231@workstation1 hw1]$ ./a.out
+ The matrix A is: 
+ 0.1934 0.1509 0.8537 0.8216
+ 0.6822 0.6979 0.5936 0.6449
+ 0.8756 0.8488 1.4473 1.4665
+ 0.2481 0.2646 0.6752 0.8198
+ vector b is: 
+   2.01959991       2.61859989       4.63819981       2.00769997    
+ The Upper triangular matrix of A is: 
+ 0.1934 0.1509 0.8537 0.8216
+ 0.0000 0.1656-2.4177-2.2532
+ 0.0000 0.0000 0.0000 0.0000
+-0.0000 0.0000 0.0000 0.1152
+ The (unit)  Lower triangular matrix of A is: 
+ 1.0000 0.0000 0.0000 0.0000
+ 3.5274 1.0000 0.0000 0.0000
+ 4.5274 1.0000 1.0000 0.0000
+ 1.2828 0.4288******* 1.0000
+ The matrix multiplication of LU is: 
+ 0.1934 0.1509 0.8537 0.8216
+ 0.6822 0.6979 0.5936 0.6449
+ 0.8756 0.8488 1.4473 1.4665
+ 0.2481 0.2646 0.6752 0.8198
+ above is same to original A. The decomposition is successful
+ Solve LUx=b The result is:
+  0.999998450       1.00000143       1.00000048      0.999999464    
+ solution check! Tolerance is:   1.01327896E-06
+ The solution is correct
+ The solution is correct
+ The solution is correct
+ The solution is correct
+ But, we desire x=[1 1 1 1], which is not the same as solution we compute.
+ the sum of elements in each row is: 
+   2.01959991       2.61860013       4.63819981       2.00769997    
+ and note the original b is: 
+   2.01959991       2.61859989       4.63819981       2.00769997

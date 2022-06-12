@@ -1,0 +1,33 @@
+program NMforsystem
+use declare_function
+use newtonsystem
+real,dimnesion(:),allocatable::vX,vX0,sol
+integer::n
+n=3
+allocate(vX(n),sol(n))
+vX(1)=5
+vX(2)=6
+vX(3)=8
+print*, size(vX)
+call Modified_Newton_Method_for_system(vX,sol)
+print*, sol
+end program NMforsystem
+
+module newtonsystem
+contains
+
+subroutine Modified_Newton_Method_for_system(vX,sol)
+use declare_function
+real,dimension(:),intent(inout)::vX0,sol !in, out, inout
+real,dimension(:),allocatable::vXn,x,mfn,pivot
+integer::iter,n,singpos
+real,dimension(:,:),allocatable::fpn,U
+real::er
+n=size(vX0)
+allocate(x(n),vXn(n),fpn(n,n),mfn(n),pivot(n-1),U(n,n))
+er=1000
+vXn=vX0
+iter=0
+x=0
+fpn=fprime(vXn)
+mfn=-1*f(vXn)

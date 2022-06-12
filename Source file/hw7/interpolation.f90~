@@ -1,0 +1,13 @@
+program integral
+implicit none
+real(16)::x,a
+a=f(x)
+print*, a
+end program integral
+
+real(16) function f(x)
+implicit none
+real(16)::x
+f=exp(x)
+return
+end function f

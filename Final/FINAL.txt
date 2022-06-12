@@ -1,0 +1,663 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[table,xcdraw]{xcolor}
+%\graphicspath{ {./images/} }
+ 
+
+\title{Computer Application for Scientific Computing Final Project with \LaTeX{}}
+
+
+\author{
+  Woojeong Park
+  \\
+  Department of Mathematical Science\\
+  Seoul National University\\
+  \texttt{2015-17231} \\
+  %% examples of more authors
+  %% \AND
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+}
+
+\begin{document}
+\maketitle
+
+
+
+
+% keywords can be removed
+
+\section{Introduction}
+In this project, we try to solve the non-linear ordinary
+differential equation called Lotka-Volterra model, which
+predicts the approximation of preys and predators in
+reality. And also solve the linear system with huge size of
+Matrix using several methods and compare what the
+differences are. There are many numerical methods including
+direct and iterative things, and we can apply to many
+mathematical problem in reality. All PseodoCode and graph
+can be used in \textt{FORTRAN90} and \textt{MATLABr2018}.
+
+\\\
+\section{Project I : Differential Equation System}
+At first, we will solve the ordinary differential equation system, namely called ODE system. It is well-known how to solve it as an analytic solution, but here we consider it as a numerical problem. 
+\\\
+\subsection{Lotka-Volterra predatoryprey model system}
+The differential equation system below is called LotkaVolterra predatorprey model system. 
+\\\
+\\\
+\begin{equation*}
+\frac{dx}{dt}=Ax(t)(1-By(t)), \quad x(0)=x_0
+\end{equation*}
+\begin{equation*}
+\frac{dy}{dt}=Cy(t)(Dx(t)-1), \quad y(0)=y_0
+\end{equation*}
+\\\
+\\\
+The variable $t$ denotes time, $x(t)$ the number of prey (e.g., rabbits) at time $t$, and $y(t)$ the number of predators (e.g., foxes). The positive constants $A$ and $C$ mean prey and predator population growth parameter, and $B$ and $D$ mean the species interaction parameters. 
+\\
+Let $A=4$, $B=12$, $C=3$, $D=13$ and $x(0)=3$, $y(0)=5$ be given. We try to solve that equation on $0 \leq t \leq 5$
+\begin{equation*}
+\frac{dx}{dt}=4x(t)(1-12y(t)), \quad x(0)=3
+\end{equation*}
+\begin{equation*}
+\frac{dy}{dt}=3y(t)(13x(t)-1), \quad y(0)=5
+\end{equation*}
+For solving this differential equation system, here we use 6 methods, plot them between time $t$ and number of preys $x$ and predators $y$, and also between $x$ and $y$.
+\\\
+\subsection{Explicit Euler Method}
+\textbf{Explicit Euler Method}, also called as \texttt{Foward Euler}, is very simple numerical method for integration of the first-order ODE. IF we should solve the ODE given:
+\begin{equation*}
+    \frac{dy}{dt}=f(t,y)
+\end{equation*}
+Then the basic algorithm using is 
+\begin{equation*}
+    y_{n+1}=y_n+hf(y_n, t_n), \; n=0,\,1,\,2,\,3,\, \cdots
+\end{equation*}
+where $y_n$ denotes $y(t_n)$ . So apply this method to our program, we get
+\begin{equation*}
+    x_{n+1}=x_n+h(4x_n-48x_n y_n)
+\end{equation*}
+\begin{equation*}
+    y_{n+1}=y_n+h(-3y_n+39x_n y_n)
+\end{equation*}
+\\
+Here is the pseudo code using this algorithm above : \\\
+\\\
+\texttt{PseudoCode : Explicit Euler Method}
+\\
+\texttt{\quad 1. do j=1, iter}
+\\
+\texttt{\quad 2. \qquad x(j+1)=x(j)+(4*x(j)-48*x(j)*y(j))*h}
+\\
+\texttt{\quad 3. \qquad y(j+1)=y(j)+(-3*y(j)+39*x(j)*y(j))*h}
+\\
+\texttt{\quad 4. enddo}\\\
+
+\\\
+We want to solve it on $0 \leq t \leq 5$, so if we are going to set $h=0.001$, $h=0.005$, $h=0.00025$, then the value of the \texttt{iter} above that algorithm should be 5000, 10000, and 20000.
+\\\
+\begin{figure}
+  \includegraphics[width=\textwidth,height=5cm]{EEh1.jpg}
+  \caption{Explicit Euler with $h=0.001$}
+  \\\
+  
+  \includegraphics[width=\textwidth,height=5cm]{EEh5.jpg}
+  \caption{Explicit Euler with $h=0.0005$}
+  \\\
+  
+  \includegraphics[width=\textwidth,height=5cm]{EEh25.jpg}
+  \caption{Explicit Euler with $h=0.00025$}
+\end{figure}
+
+\\\
+
+Briefly, we can notice that the number of preys and predators started at 5 and 3 respectively, and they become almost to zero at $t \geq 2$. There are no explicit difference with the different value of $h$. I think because the number of predators at the begin is larger than preys, so they are predicted all going to be extinct.
+\\\
+
+\\\
+
+
+\subsection{Implicit Euler Method}
+\textbf{Implicit Euler Method}, also called \texttt{Backward Euler}, costs higher than the explicit method before, but it is significantly stable than other methods. The basic algorithm is below : 
+\begin{equation*}
+    y_{n+1}=y_n+hf(y_{n+1},t_{n+1})
+\end{equation*}
+So our problem is :
+\begin{equation*}
+    x_{n+1}=x_n+h(4x_{n+1}-48x_{n+1} y_n)
+\end{equation*}
+\begin{equation*}
+    y_{n+1}=y_n+h(-3y_{n+1}+39x_n y_{n+1})
+\end{equation*}
+\\\
+Note that for applying this method to solve that ODE system, we should remain $y_n$ and $x_n$ at the first and second equation. Now describe what $x_{n+1}$ and $y_{n+1}$ are. Just describing only the $x_{n+1}$ and $y_{n+1}$ is below : 
+\\\
+
+\begin{equation*}
+    x_{n+1}=\frac{x_n}{1-h(4-48y_n)}
+\end{equation*}
+\begin{equation*}
+    y_{n+1}=\frac{y_n}{1-h(-3+39x_n)}
+\end{equation*}
+\\\
+
+Here is the pseudo code using this algorithm above : \\\
+\\\
+\texttt{PseudoCode : Implicit Euler Method}
+\\
+\texttt{\quad 1. do j=1, iter}
+\\
+\texttt{\quad 2. \qquad x(j+1)=x(j)/(1-h*(4-48*y(j)))}
+\\
+\texttt{\quad 3. \qquad y(j+1)=y(j)/(1-h*(-3+39*x(j)))}
+\\
+\texttt{\quad 4. enddo}\\\
+
+\\\
+Similar to Explicit Euler method, the number of iteration is decided on the same way, and execute the code using \textt{FORTRAN90}, we get the following result.
+\\\
+\\\
+\begin{figure}
+  \includegraphics[width=\textwidth,height=5cm]{IEh1.jpg}
+  \caption{Implicit Euler with $h=0.001$}
+  \\\
+  
+  \includegraphics[width=\textwidth,height=5cm]{IEh5.jpg}
+  \caption{Implicit Euler with $h=0.0005$}
+  \\\
+  
+  \includegraphics[width=\textwidth,height=5cm]{IEh25.jpg}
+  \caption{Implicit Euler with $h=0.00025$}
+\end{figure}
+
+\\\
+We can figure out that the result from \texttt{Implicit Euler Method} is the same as the result from \texttt{Explicit Euler Method}.
+\\\
+\\\
+\\\
+\subsection{Improved Euler Method}
+\textbf{Improved Euler Method} is basically the combination of Explicit and Implicit Methods. There are many combinations for using Improved Euler Methods, we use that relation below : (This method is called Trapezoidal method.)
+\begin{equation*}
+    y_{n+1}=y_n+\frac{h}{2} (f(y_n, t_n) + f(y_{n+1}, t_{n+1}))
+\end{equation*}
+On that problem, similar to implicit method, we should change the form of that relation only for $y_{n+1}$. Let's see our problem is : 
+\begin{equation*}
+    x_{n+1}=x_n+\frac{h}{2} (4x_n-48x_n y_n + 4x_{n+1}-48x_{n+1}y_n)
+\end{equation*}
+\begin{equation*}
+    y_{n+1}=y_n+\frac{h}{2} (-3y_n+39x_n y_n - 3y_{n+1}+39x_n y_{n+1})
+\end{equation*}
+So we get
+\begin{equation*}
+    x_{n+1}=\frac{x_n(1+h(2-24y_n))}{1-h(2-24y_n)}
+\end{equation*}
+\begin{equation*}
+    y_{n+1}=\frac{y_n(1+\frac{h}{2}(-3+39x_n))}{1-\frac{h}{2}(-3+39x_n)}
+\end{equation*}
+\\\
+
+It looks kinds of complicated, but it can help to reduce the error of order 3 or higher than explicit or implicit Euler methods. And it also optimizes the computational cost, so if we can get other methods instead of trapezoid, we develop the numerical precision as high as possible.
+\\\
+
+
+Here is the pseudo code using this algorithm above : \\\
+\\\
+\texttt{PseudoCode : Improved Euler Method}
+\\
+\texttt{\quad 1. do j=1, iter}
+\\
+\texttt{\quad 2. \qquad x(j+1)=x(j)*(1+h*(2-24*y(j)))/(1-h*(2-24*y(j)))}
+\\
+\texttt{\quad 3. \qquad y(j+1)=y(j)*(1+h*(-3+39*x(j))/2)/(1-h*(-3+39*x(j))/2)}
+\\
+\texttt{\quad 4. enddo}\\\
+
+And, as we expected, excuting the code using \texttt{FORTRAN90}, we get the same result.
+
+\\\
+\begin{figure}
+  \includegraphics[width=\textwidth,height=5cm]{IPE1.jpg}
+  \caption{Improved Euler with $h=0.001$}
+  \\\
+  
+  \includegraphics[width=\textwidth,height=5cm]{IPE5.jpg}
+  \caption{Improved Euler with $h=0.0005$}
+  \\\
+  
+  \includegraphics[width=\textwidth,height=5cm]{IPE25.jpg}
+  \caption{Improved Euler with $h=0.00025$}
+\end{figure}
+\\\
+\\\
+
+\subsection{Runge-Kutta Method}
+Runge-Kutta Method is one of the famous explicit method to solve ODE $\frac{dy}{dt}=f(y,t)$. Runge-Kutta method is to find intermediate point between $t_n$ and $t_{n+1}$ and we can predict the next value $y_n$ more accurately. There 2 kinds of Runge-Kutta method will be introduced. The order means 'how much the error, the difference between approximation and exact value, is reduced'.
+\\\
+\subsubsection{RK-2nd Order}
+The general form of Runge-Kutta Method 2nd Order is :
+\begin{equation*}
+    y_{n+1}=y_n+\gamma_1 k_1 + \gamma_1 k_2
+\end{equation*}
+where $\gamma_1$, $\gamma_2$ is constant and 
+\begin{equation*}
+    k_1=hf(y_n, t_n), \quad k_2=hf(y_n+\beta k_1, t_n+\alpha h)
+\end{equation*}
+We're going to use the most popular form. Let $\gamma_1=0$, $\gamma_2=1$, $\alpha=\beta=\frac{1}{2}$, then we get
+\\\
+\begin{equation*}
+    y_{n+1}=y_n+hf(y_n + \frac{1}{2}hf(y_n,t_n), t_n +\frac{1}{2}h)
+\end{equation*}
+
+Apply to our problem, then the final form is : 
+\begin{equation*}
+k_1_x=h(4x_n-48x_n y_n)
+\end{equation*}
+\begin{equation*}
+k_1_y=h(-3y_n+39x_n y_n)
+\end{equation*}
+\begin{equation*}
+k_2_x=h(4(x_n+\frac{1}{2}k_1_x)-48(x_n+\frac{1}{2}k_1_x)y_n)
+\end{equation*}
+\begin{equation*}
+k_2_y=h(-3(y_n+\frac{1}{2}k_1_y)+39(y_n+\frac{1}{2}k_1_y)x_n)
+\end{equation*}
+\begin{equation*}
+x_{n+1}=x_n+k_2_x , \qquad y_{n+1}=y_n+k_2_y
+\end{equation*}
+\\\
+Here is the pseudo code using this algorithm above : \\\
+\\\
+\texttt{PseudoCode : Runge-Kutta 2nd Order}
+\\
+\texttt{\quad 1. do j=1, iter}
+\\
+\texttt{\quad 2. \qquad  k1x=h*(4*x(j)-48*x(j)*y(j))}
+\\
+\texttt{\quad 3. \qquad k1y=h*(-3*y(j)+39*y(j)*x(j))}
+\\
+\texttt{\quad 4. \qquad k2x=h*(4*(x(j)+k1x/2)-48*(x(j)+k1x/2)*y(j))}
+\\
+\texttt{\quad 5. \qquad k2y=h*(-3*(y(j)+k1y/2)+39*(y(j)+k1y/2)*x(j))}
+\\
+\texttt{\quad 6. \qquad x(j+1)=x(j)+k2x}
+\\
+\texttt{\quad 7. \qquad y(j+1)=y(j)+k2y}
+\\
+\texttt{\quad 8. enddo}\\\
+
+\\\
+\begin{figure}
+  \includegraphics[width=\textwidth,height=5cm]{RG2h1.jpg}
+  \caption{Runge-Kutta 2nd Order with $h=0.001$}
+  \\\
+  
+  \includegraphics[width=\textwidth,height=5cm]{RG2h5.jpg}
+  \caption{Runge-Kutta 2nd Order with $h=0.0005$}
+  \\\
+  
+  \includegraphics[width=\textwidth,height=5cm]{RG2h25.jpg}
+  \caption{Runge-Kutta 2nd Order with $h=0.00025$}
+\end{figure}
+\\
+
+\subsubsection{RK-4th Order}
+Runge-Kutta fourth order method is much more precisely than any other numerical ode solver. So many automatic solver including MATLAB or MATHEMETICA is programmed with using Runge-Kutta 4-th Order method. The general form is :
+\begin{equation*}
+    y_{n+1}=y_n+\frac{h}{6}(k_1+2k_2+2k_3+k_4)
+\end{equation*}
+where
+\begin{equation*}
+    k_1=f(y_n,t_n) \qquad k_2= f(y_n+\frac{1}{2}k_1,t_n+\frac{h}{2})
+\end{equation*}
+\begin{equation*}
+    k_3=f(y_n+\frac{1}{2}k_2,t_n+\frac{h}{2}) \qquad k_4= f(y_n+k_3,t_n+h)
+\end{equation*}
+\\\
+Similar to RK-2nd Order method, we can apply that basic algorithm into our problem. Then the pseudo code is : 
+\\\
+\\\
+\texttt{PseudoCode : Runge-Kutta 4th Order}
+\\
+\texttt{\quad 1. do j=1, iter}
+\\
+\texttt{\quad 2. \qquad  k1x=4*x(j)-48*x(j)*y(j)}
+\\
+\texttt{\quad 3. \qquad k1y=-3*y(j)+39*x(j)*y(j)}
+\\
+\texttt{\quad 4. \qquad k2x=4*(x(j)+k1x*h/2)-48*(x(j)+k1x*h/2)*y(j)}
+\\
+\texttt{\quad 5. \qquad k2y=-3*(y(j)+k1y*h/2)+39*x(j)*(y(j)+k1y*h/2)}
+\\
+\texttt{\quad 6. \qquad  k3x=4*(x(j)+k2x*h/2)-48*(x(j)+k2x*h/2)*y(j)}
+\\
+\texttt{\quad 7. \qquad k3y=-3*(y(j)+k2y*h/2)+39*x(j)*(y(j)+k2y*h/2)}
+\\
+\texttt{\quad 8. \qquad k4x=4*(x(j)+k3x*h)-48*(x(j)+k3x*h)*y(j)}
+\\
+\texttt{\quad 9. \qquad k4y=-3*(y(j)+k3y*h)+39*x(j)*(y(j)+k3y*h)}
+\\
+\texttt{\quad 10. \,\;\quad x(j+1)=x(j)+h*(k1x+k2x+k3x+k4x)/6}
+\\
+\texttt{\quad 11. \,\;\quad y(j+1)=y(j)+h*(k1y+k2y+k3y+k4y)/6}
+\\
+\texttt{\quad 12. enddo}\\\
+
+\\\
+\\\
+\begin{figure}[h]
+  \includegraphics[width=\textwidth,height=4cm]{RG4h1.jpg}
+  \caption{Runge-Kutta 4th Order with $h=0.001$}
+  \\\
+  \end{figure}
+  \begin{figure}[h]
+  \includegraphics[width=\textwidth,height=5cm]{RG4h5.jpg}
+  \caption{Runge-Kutta 4th Order with $h=0.0005$}
+  \\\
+  \end{figure}
+  \begin{figure}[h]
+  \includegraphics[width=\textwidth,height=5cm]{RG4h25.jpg}
+  \caption{Runge-Kutta 4th Order with $h=0.00025$}
+\end{figure}
+
+
+\subsection{Leapfrog Method}
+\textbf{Leapfrog Method} is the one of the multi-step method which has second-order accurate globally. This method is derived by applying the central difference formula. By subtract these two equations below, 
+\begin{equation*}
+    y_{n+1}=y_n+hy'_n+\frac{h^2}{2}y''_n+ \cdots
+\end{equation*}
+\begin{equation*}
+    y_{n-1}=y_n-hy'_n+\frac{h^2}{2}yll_n+ \cdots
+\end{equation*}
+we get
+\begin{equation*}
+    y_{n+1}=y_{n-1}+2hf(y_n,t_n)+O(h^3) 
+\end{equation*}
+
+\\
+\\
+Here is the pseudo code using this algorithm above : \\\
+\\\
+\texttt{PseudoCode : Leapfrog Method}
+\\
+\texttt{\quad 1. do j=1, iter}
+\\
+\texttt{\quad 2. \qquad x(j+1)=x(j-1)+(4*x(j-1)-48*x(j-1)*y(j-1))*h*2}
+\\
+\texttt{\quad 3. \qquad y(j+1)=y(j-1)+(-3*y(j-1)+39*x(j-1)*y(j-1))*h*2}
+\\
+\texttt{\quad 4. enddo}\\\
+
+\\
+\\
+\\
+
+\begin{figure}[h]
+\\\
+  \includegraphics[width=\textwidth,height=5cm]{IPE1.jpg}
+  \caption{Leapfrog Method with $h=0.001$}
+  \\\
+  
+  \includegraphics[width=\textwidth,height=5cm]{IPE5.jpg}
+  \caption{Leapfrog Method with $h=0.0005$}
+\end{figure}
+\newpage
+\begin{figure}[t]
+  \includegraphics[width=\textwidth,height=5cm]{IPE25.jpg}
+  \caption{Leapfrog Method with $h=0.00025$}
+\end{figure}
+
+As we noticed, because the results of all the methods are same, so we didn't make any mistakes, and execute programming code right.
+
+\subsection{Result and Discussion}
+As we can see, the result of all 6 methods, number of preys and predator plot per time and plot of them, are almost the same. Especially, by changing the value of $h$ from $0.001$ to $0.00025$, the maximum value of the predators decrease a little, which means the precision is being higher. The same thing is noticed in the second plot between predators and preys. So if we choose $h$ much smaller, we can easily find the critical point or equilibrium point of that differential equation system. 
+In usual, when solving Lotka-Volterra predatory & prey model, the solution function looks like kinds of something periodic. For find the periodic part of that differential equation, I use MATHEMATICA to use the internal function called ode45 and plot it on the extended domain. Let's see that \texttt{Figure 19}.
+\begin{figure}[h]
+\includegraphics[width=8cm,height=4.7cm]{Lves.jpg}
+\centering
+\caption{The extended solution of Lotka-Volterra model}
+\end{figure}
+\newpage
+At the extended time series, we finally notice that the number of predators and preys are circulating each other. At the result we solved above, at $0\leq t \leq 5$, we may predict the two species would be extinct.
+Maybe we can find the appropriate values of coefficients when considering the + and - of each derivative. As we can see from the table below, we can notice that as there are some conditions of A, B, C and D satisfied, we can get appropriate solutions what we want.
+\newline
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccc@{}}
+\toprule
+-   & $\frac{dx}{dt}$ & $\frac{dy}{dt}$ & Direction \\ \midrule
+I   & $+$               & $-$               & \searrow         \\
+II  & $+$               & $+$               & \nearrow         \\
+III & $-$               & $+$               & \nwarrow        \\
+IV  & $-$               & $-$               & \swarrow         \\ \bottomrule
+\end{tabular}
+\end{table}
+\newline
+
+We can easily notice that the sign of each derivative changes when $x$ and $y$ are larger(or smaller) than $\frac{1}{D}$ and $\frac{1}{B}$. So we can see the cycle when the appropriate condition of coefficients A, B, C and D and initial value given.
+\newline
+\\
+\begin{figure}[h]
+\includegraphics[width=\textwidth,height=4.7cm]{Volterra cycle.jpg}
+\centering
+\caption{Lotka-Volterra critical point and Cycle}
+\end{figure}
+\newline
+\\
+Now, let's change the coefficients in many cases. As we can see, if the coefficients get closer to the equilbrium point, $(\frac{1}{D},\frac{1}{B})$ as possible, there are much numbers of cycles near that point. At the initial value is at distance sufficiently, like $x_0=y_0=5$, we cannot find any cycle between preys and predators. So we need to set a initial value appropriately.
+\begin{figure}[h]
+\includegraphics[width=\textwidth,height=4.7cm]{Volterra(1,1)(3,3).jpg}
+\centering
+\caption{$x_0=y_0=1$ and $x_0=y_0=3$}
+\end{figure}
+\\
+\begin{figure}[h]
+\includegraphics[width=\textwidth,height=4.7cm]{Volterra(4,4)(5,5)}
+\centering
+\caption{$x_0=y_0=4$ and $x_0=y_0=5$}
+\end{figure}
+\newpage
+Among the 6 methods for solving ODE, the well-known fact is that Runge-kutta is the most popular and has significant preciion almost higher than other methods, but it is very complicated to execute in programming code. However, Leapfrog method is easy to understand and execute in programming code, and also make the precision higher for expanding taylor series more longer. The best way to solve differential equation is, at first, we should know how much precise we want, and choose the easier way to find the solution satisfying our purpose. 
+
+\newpage
+\section{Project II : Linear system}
+All the linear system can be identified with linear map equation (or matrix equation) following : 
+\newline
+\begin{equation*}
+    Ax=b
+\end{equation*}
+\newline
+Where A is $m\times n$ matrix, and x and b is $n \times 1$ matrix. As we know, if given matrix $A$ is invertible, then that equation above has a unique solution $x=A^{-1} b$. But, in many cases A is not a square matrix, so we cannot find the exact solution. There are many ways to decompose that given matrix $A$ into several useful things, so in this project, we apply several methods and find the approximate solution, and measure the executing time for which method is much faster than others.
+\\
+Here are some information of that given matrix we try to analyze. 
+\newline
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lr@{}}
+\toprule
+\multicolumn{2}{c}{Matrix Properties}          \\ \midrule
+Number of rows                     & 494       \\
+Number of columns                  & 494       \\
+nonzeros                           & 1,666     \\
+structural full rank?              & yes       \\
+structural rank                    & 494       \\
+Number of blocks from dmperm       & 1         \\
+Number of strongly connected comp. & 1         \\
+explicit zero entries              & 0         \\
+nonzero pattern symmetry           & symmetric \\
+numeric value symmetry             & symmetric \\
+type                               & real      \\
+structure                          & symmetric \\
+Cholesky candidate                 & yes       \\
+positive definite                  & yes       \\ \bottomrule
+\end{tabular}
+\end{table}
+\newline
+\newline
+\subsection{Direct Method}
+Direct Methods is, at first, to decompose the given matrix A into very useful form. For solving the linear system, when A is triangular matrix then it'll be helpful for doing that. We introduce two methods, one called \texttt{PLU-Decomposition} and \texttt{QR-Decomposition}.
+\newline
+\\
+\subsubsection{LU decomposition - Partial Pivoting}
+There are so many methods related with LU decomposition, which solve using Lower and Upper Triangular matrix. We'll introduce the simplest and strongest one among them.
+\\
+It is well known that Gauss elimination can make given matrix $A$ upper triangular. But in some cases, when the elements on diagonal can sometimes make error on solving the linear system. So we prevent it by pivoting diagonal entires with other entries. In detail, we should change the $j$-th and $j_s$-th row where $\vert a_{j_s j} \vert \geq \vert a_{k j} \vert$ for $k \geq j$ for more exact solution. 
+\\
+Here is the algorithm using LU decomposition with partial pivoting.
+\\
+\newline
+\texttt{PseudoCode : LU decomposition with Partial Pivoting}
+\\
+\texttt{\quad 1. do j=1, n-1}
+\\
+\texttt{\quad 2. \qquad  jsave=MAXLOC(ABS(a(j:n,j)),1)}
+\\
+\texttt{\quad 3. \qquad js=jsave+j-1}
+\\
+\texttt{\quad 4. \qquad change a(j,:) and a(js,:)}
+\\
+\texttt{\quad 5. \qquad change b(j) and b(js)}
+\\
+\texttt{\quad 6. \qquad  do k=j+1, n}
+\\
+\texttt{\quad 7. \qquad \quad m=a(k,j)/a(j,j)}
+\\
+\texttt{\quad 8. \qquad \quad a(k,k:n)=a(k,k:n)-m*a(j,k:n)}
+\\
+\texttt{\quad 9. \qquad \quad b(k)=b(k)-m*b(j)}
+\\
+\texttt{\quad 10. \,\;\quad enddo}
+\\
+\texttt{\quad 11.\qqaud enddo}
+\newline
+Our matrix size is $n=494$, so we can apply this algorithm and execute to find the solution x. The costed cputime is :
+\newline
+\begin{equation*}
+    t_{PLU}=13.340850
+\end{equation*}
+\newline
+and we can also the plot of the x with its index on x-label.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth,height=5cm]{PLU_sol.jpg}
+    \caption{Solution from LU decomposition with Partial Pivoting}
+\end{figure}
+\newpage
+\subsubsection{QR-Decomposition}
+QR decomposition is basically make each column of given matrix mutually orthogonal. So it costs a lot more than LU decomposition, but it is quite useful when the given matrix is non-square. (In fortunate, our matrix is $494 \times 494$ square matrix). there are three famous QR decomposition, which are \texttt{Gram-Schmidt Orthogonalization}, \texttt{Householder transformation}, and \texttt{Givens Rotation}. We use Givens rotation to solve that given system.
+\\
+Givens rotation makes columns of the matrix being orthogonal by rotation on the hyperplane. So, at first, we should find $theta$ of the $k$-th and $l$-th coordinates as follow : 
+\newline
+\newline
+\texttt{PseudoCode : Givens Rotation I : find $\theta$}
+\\
+\texttt{\quad 1. v(:)=a(k,:)}
+\\
+\texttt{\quad 2. w(:)=a(l,:)}
+\\
+\texttt{\quad 3. a(k,:)=$\cos{\theta}$*v(:)+$\sin{\theta}$*w(:)}
+\\
+\texttt{\quad 4. a(l,:)=$-\sin{\theta}$*v(:)+$\cos{\theta}$*w(:)}
+\newline
+\newline
+We can identify the above algorithm making column like that with multiplying the matrix $G_j$ on left side of the A. The $G_j$ is following : ($c_j$ and $s_j$ means $\cos{\theta_j}$, $\sin{\theta_j}$ respectively.)
+\\
+\begin{equation*}
+\centering
+\begin{pmatrix}
+\qquad & \vdots & \qquad & \vdots & \qquad \\
+\cdots & c_j  &  \cdots &  s_j & \cdots \\
+\qquad & \vdots & \qquad & \vdots & \qquad \\
+\cdots & -s_j  &  \cdots &  c_j & \cdots \\
+\qquad & \vdots & \qquad & \vdots & \qquad
+\end{pmatrix}
+\end{equation*}
+\\
+\newline
+For more stability, we compute $\sqrt{1-s_j ^2}$ than $sqrt{1-c_j ^2}$ if $\vert s_j \vert \leq \vert c_j \vert$. For this, define $\rho(j)$ as
+\newline
+\begin{equation*}
+\rho(j)=\left \{ \begin{array}{cc} 1 \qquad (c_j=0)\\ \quad \frac{s_j}{2} \qquad (\vert s_j \vert < \vert c_j \vert) \\ \quad \frac{2}{c_j}  \qquad (\vert c_j \vert \leq \vert s_j \vert \end{array} \right.
+\end{equation*}
+\newline
+Now, put $k'(j)=sign(c_j)k(j)$, $l'(j)=sign(s_j)l(j)$, and store only $(k'(j), l'(j), \rho(j))$. For the recovery of $G_j$, use the following algorithm. 
+\newline
+\\
+\texttt{PseudoCode : Givens Rotation II : find $G_j$}
+\\
+\texttt{\quad 1. if($\rho(j)==1$) then $c_j=0;s_j=$sign $l'(j)$}
+\\
+\texttt{\quad 2. elseif($\vert\rho(j)\vert<1$) then $s_j=2\rho(j)$,$c_j=$sign $k'(j)\sqrt{1-s_j ^2}$}
+\\
+\texttt{\quad 3. else $c_k=2/\rho(j)$; $s_j=$sign $l'(j)\sqrt{1-c_j ^2}$}
+\\
+\texttt{\quad 4. endif}
+\newline
+\newline
+It may be easier for using two subroutine and apply above algorithms appropriately. The executed result is below : 
+\newline
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth,height=6cm]{QR_sol.jpg}
+    \caption{Solution from Givens Rotation}
+\end{figure}
+\\
+and the calculated time is 
+\begin{equation*}
+    t_{QR}=18.862775
+\end{equation*}
+As we can see, the result is very similar to LU decomposition solution, so we can check we programmed that method right. As expected, the costed time of QR decomposition is larger than of LU decomposition, because the amount of calculation of QR decomposition is as twice as of LU decomposition. Not only for factorizing, but also for making their columns mutually orthogonal advantages us for analzing it.
+\bibliographystyle{unsrt}  
+%\bibliography{references}  %%% Remove comment to use the external .bib file (using bibtex).
+%%% and comment out the ``thebibliography'' section.
+
+
+%%% Comment out this section when you \bibliography{references} is enabled.
+\begin{thebibliography}{1}
+
+\bibitem{kour2014real}
+George Kour and Raid Saabne.
+\newblock Real-time segmentation of on-line handwritten arabic script.
+\newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
+  International Conference on}, pages 417--422. IEEE, 2014.
+
+\bibitem{kour2014fast}
+George Kour and Raid Saabne.
+\newblock Fast classification of handwritten on-line arabic characters.
+\newblock In {\em Soft Computing and Pattern Recognition (SoCPaR), 2014 6th
+  International Conference of}, pages 312--318. IEEE, 2014.
+
+\bibitem{hadash2018estimate}
+Guy Hadash, Einat Kermany, Boaz Carmeli, Ofer Lavi, George Kour, and Alon
+  Jacovi.
+\newblock Estimate and replace: A novel approach to integrating deep neural
+  networks with existing applications.
+\newblock {\em arXiv preprint arXiv:1804.09028}, 2018.
+
+\end{thebibliography}
+
+
+\end{document}

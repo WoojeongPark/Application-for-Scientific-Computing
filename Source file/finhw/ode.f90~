@@ -1,0 +1,6 @@
+program foward_euler
+implicit none
+real(16)::dt,yn,ynp1,T_final
+integer::i,j,k,n,m,size
+
+end program foward_euler

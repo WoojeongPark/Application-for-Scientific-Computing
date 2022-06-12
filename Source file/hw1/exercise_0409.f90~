@@ -1,0 +1,15 @@
+program subroutine_test
+implicit none
+real::A(5,5)
+integer::i
+call showmat(A,5)
+end program subroutine_test
+
+subroutine showmat(A,n)
+implicit none
+real::A(n,n)
+integer::n,i
+do i=1,n
+print*, A(i:n)
+enddo
+end subroutine showmat

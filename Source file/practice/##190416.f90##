@@ -1,0 +1,8 @@
+program LU_pivot
+implicit none
+end program LU_pivot
+
+subroutine 
+ierr=0
+do j=1,n-1
+p=maxloc(abs(U(j:n

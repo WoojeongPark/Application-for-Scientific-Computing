@@ -1,0 +1,5 @@
+program H_QR
+real(8),allocatable::A(:,:),Q(:,:),R(:,:),H(:,:),x(:),v(:),xsign,xnorm,vnorm,I(:,:)
+integer::n,m,i,j,k
+
+end program H_QR
